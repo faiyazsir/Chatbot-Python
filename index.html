@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Bot</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .chat-container {
+      max-width: 500px;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-top: 50px;
+      background-color: #fff;
+    }
+    .user-message {
+      background-color: #d4edda;
+    }
+    .response-message {
+      background-color: #cce5ff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container chat-container">
+    <div id="chatMessages"></div>
+    <div class="input-group mt-3">
+      <input type="text" class="form-control" id="messageInput" placeholder="Type your message...">
+      <div class="input-group-append">
+        <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+    function sendMessage() {
+      const messageInput = document.getElementById('messageInput');
+      const message = messageInput.value;
+
+      if (message.trim() === '') {
+        return;
+      }
+
+      const chatMessages = document.getElementById('chatMessages');
+      const userMessageDiv = document.createElement('div');
+      userMessageDiv.className = 'alert alert-primary user-message';
+      userMessageDiv.textContent = 'You: ' + message;
+      chatMessages.appendChild(userMessageDiv);
+
+      // Reset input
+      messageInput.value = '';
+
+      // Send message to server
+      fetch('/api', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        const responseMessageDiv = document.createElement('div');
+        responseMessageDiv.className = 'alert alert-info response-message';
+        responseMessageDiv.textContent = 'Response: ' + data.message;
+        chatMessages.appendChild(responseMessageDiv);
+      })
+      .catch(error => console.error('Error:', error));
+    }
+  </script>
+</body>
+</html>
